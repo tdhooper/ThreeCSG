@@ -143,7 +143,9 @@ module.exports = function(THREE) {
 			vertice_dict = {},
 			vertex_idx_a, vertex_idx_b, vertex_idx_c,
 			vertex, face,
-			verticeUvs;
+			verticeUvs,
+			normal,
+			verticeNormals;
 	
 		for ( i = 0; i < polygon_count; i++ ) {
 			polygon = polygons[i];
@@ -151,12 +153,15 @@ module.exports = function(THREE) {
 			
 			for ( j = 2; j < polygon_vertice_count; j++ ) {
 				verticeUvs = [];
+				verticeNormals = [];
 				
 				vertex = polygon.vertices[0];
 				verticeUvs.push( new THREE.Vector2( vertex.uv.x, vertex.uv.y ) );
+				normal = new THREE.Vector3( vertex.normal.x, vertex.normal.y, vertex.normal.z );
 				vertex = new THREE.Vector3( vertex.x, vertex.y, vertex.z );
 				vertex.applyMatrix4(matrix);
-				
+				normal.applyMatrix4(matrix);
+				verticeNormals.push( normal );
 				if ( typeof vertice_dict[ vertex.x + ',' + vertex.y + ',' + vertex.z ] !== 'undefined' ) {
 					vertex_idx_a = vertice_dict[ vertex.x + ',' + vertex.y + ',' + vertex.z ];
 				} else {
@@ -166,8 +171,11 @@ module.exports = function(THREE) {
 				
 				vertex = polygon.vertices[j-1];
 				verticeUvs.push( new THREE.Vector2( vertex.uv.x, vertex.uv.y ) );
+				normal = new THREE.Vector3( vertex.normal.x, vertex.normal.y, vertex.normal.z );
 				vertex = new THREE.Vector3( vertex.x, vertex.y, vertex.z );
 				vertex.applyMatrix4(matrix);
+				normal.applyMatrix4(matrix);
+				verticeNormals.push( normal );
 				if ( typeof vertice_dict[ vertex.x + ',' + vertex.y + ',' + vertex.z ] !== 'undefined' ) {
 					vertex_idx_b = vertice_dict[ vertex.x + ',' + vertex.y + ',' + vertex.z ];
 				} else {
@@ -177,8 +185,11 @@ module.exports = function(THREE) {
 				
 				vertex = polygon.vertices[j];
 				verticeUvs.push( new THREE.Vector2( vertex.uv.x, vertex.uv.y ) );
+				normal = new THREE.Vector3( vertex.normal.x, vertex.normal.y, vertex.normal.z );
 				vertex = new THREE.Vector3( vertex.x, vertex.y, vertex.z );
 				vertex.applyMatrix4(matrix);
+				normal.applyMatrix4(matrix);
+				verticeNormals.push( normal );
 				if ( typeof vertice_dict[ vertex.x + ',' + vertex.y + ',' + vertex.z ] !== 'undefined' ) {
 					vertex_idx_c = vertice_dict[ vertex.x + ',' + vertex.y + ',' + vertex.z ];
 				} else {
@@ -190,7 +201,7 @@ module.exports = function(THREE) {
 					vertex_idx_a,
 					vertex_idx_b,
 					vertex_idx_c,
-					new THREE.Vector3( polygon.normal.x, polygon.normal.y, polygon.normal.z )
+					verticeNormals
 				);
 				
 				geometry.faces.push( face );
